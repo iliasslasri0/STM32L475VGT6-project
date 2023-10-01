@@ -82,7 +82,196 @@ Disassembly of section .text.startup:
 But there is a difference in the assembly code as the code (yes they have the same size) & the operations, are "not that" different, the compiler just performed some permutations of instructions, there is also differences in the immediate values.
 
 
-As a small conclusion, optimization flags affect code generation and not data sections, we didn't see any changes in the sizes of .data and .bss sections when we change optimization levels. 
+As a small conclusion, optimization flags affect code generation and rodata and not data sections, we didn't see any changes in the sizes of .data and .bss sections when we change optimization levels. 
+
+```
+crdn-06% arm-none-eabi-objdump -h O0-optim.o
+
+O0-optim.o:     file format elf32-littlearm
+
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b4  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000004  00000000  00000000  000000e8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  000000ec  2**2
+                  ALLOC
+  3 .rodata       00000040  00000000  00000000  000000ec  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .comment      0000001c  00000000  00000000  0000012c  2**0
+                  CONTENTS, READONLY
+  5 .ARM.attributes 0000002a  00000000  00000000  00000148  2**0
+                  CONTENTS, READONLY
+crdn-06% arm-none-eabi-objdump -h O1-optim.o
+
+O1-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000006c  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000004  00000000  00000000  000000a0  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  000000a4  2**2
+                  ALLOC
+  3 .rodata.str1.4 00000030  00000000  00000000  000000a4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .rodata       0000000e  00000000  00000000  000000d4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .comment      0000001c  00000000  00000000  000000e2  2**0
+                  CONTENTS, READONLY
+  6 .ARM.attributes 0000002a  00000000  00000000  000000fe  2**0
+                  CONTENTS, READONLY
+
+crdn-06% arm-none-eabi-objdump -h O2-optim.o
+
+O2-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000000  00000000  00000000  00000034  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000004  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  00000038  2**2
+                  ALLOC
+  3 .rodata.str1.4 00000030  00000000  00000000  00000038  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .text.startup 0000006c  00000000  00000000  00000068  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  5 .rodata       0000000e  00000000  00000000  000000d4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  6 .comment      0000001c  00000000  00000000  000000e2  2**0
+                  CONTENTS, READONLY
+  7 .ARM.attributes 0000002a  00000000  00000000  000000fe  2**0
+                  CONTENTS, READONLY
+crdn-06% arm-none-eabi-objdump -h Os-optim.o
+
+Os-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000000  00000000  00000000  00000034  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000004  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  00000038  2**2
+                  ALLOC
+  3 .rodata.str1.1 0000002d  00000000  00000000  00000038  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .text.startup 00000068  00000000  00000000  00000068  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  5 .rodata       0000000e  00000000  00000000  000000d0  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  6 .comment      0000001c  00000000  00000000  000000de  2**0
+                  CONTENTS, READONLY
+  7 .ARM.attributes 0000002a  00000000  00000000  000000fa  2**0
+                  CONTENTS, READONLY
+
+```
 
 ### 2) -Remplacez const char mesg[] par static const char mesg[]. Expliquez les différences dans les sections de données par rapport à la question précédente (elles dépendent ici aussi des optimisations).
 
+
+In this case we expect in at least one level of optimization or even w/ optimization, the static mesg[] goes to the section data, but we observe that it the size of .data dind't increase, ( because even if it is static it constant nature forces it to .rodata ) 
+
+Resultats : 
+
+
+```
+crdn-06% arm-none-eabi-objdump -h O0-optim.o
+
+O0-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000b4  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000004  00000000  00000000  000000e8  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  000000ec  2**2
+                  ALLOC
+  3 .rodata       00000040  00000000  00000000  000000ec  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .comment      0000001c  00000000  00000000  0000012c  2**0
+                  CONTENTS, READONLY
+  5 .ARM.attributes 0000002a  00000000  00000000  00000148  2**0
+                  CONTENTS, READONLY
+crdn-06% arm-none-eabi-objdump -h O1-optim.o
+
+O1-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000006c  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data         00000004  00000000  00000000  000000a0  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  000000a4  2**2
+                  ALLOC
+  3 .rodata.str1.4 00000030  00000000  00000000  000000a4  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .comment      0000001c  00000000  00000000  000000d4  2**0
+                  CONTENTS, READONLY
+  5 .ARM.attributes 0000002a  00000000  00000000  000000f0  2**0
+                  CONTENTS, READONLY
+crdn-06% arm-none-eabi-objdump -h O2-optim.o
+
+O2-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000000  00000000  00000000  00000034  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000004  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  00000038  2**2
+                  ALLOC
+  3 .rodata.str1.4 00000030  00000000  00000000  00000038  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .text.startup 0000006c  00000000  00000000  00000068  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  5 .comment      0000001c  00000000  00000000  000000d4  2**0
+                  CONTENTS, READONLY
+  6 .ARM.attributes 0000002a  00000000  00000000  000000f0  2**0
+                  CONTENTS, READONLY
+crdn-06% arm-none-eabi-objdump -h Os-optim.o
+
+Os-optim.o:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000000  00000000  00000000  00000034  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000004  00000000  00000000  00000034  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000005  00000000  00000000  00000038  2**2
+                  ALLOC
+  3 .rodata.str1.1 0000002d  00000000  00000000  00000038  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .text.startup 00000068  00000000  00000000  00000068  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  5 .comment      0000001c  00000000  00000000  000000d0  2**0
+                  CONTENTS, READONLY
+  6 .ARM.attributes 0000002a  00000000  00000000  000000ec  2**0
+                  CONTENTS, READONLY
+
+```
+
+
+```
+crdn-06% size O0-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
+   text	   data	    bss	    dec	    hex	filename
+    244	      4	      5	    253	     fd	O0-optim.o
+crdn-06% size O1-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
+   text	   data	    bss	    dec	    hex	filename
+    156	      4	      5	    165	     a5	O1-optim.o
+crdn-06% size O2-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
+   text	   data	    bss	    dec	    hex	filename
+    156	      4	      5	    165	     a5	O2-optim.o
+crdn-06% size Os-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
+   text	   data	    bss	    dec	    hex	filename
+    149	      4	      5	    158	     9e	Os-optim.o
+```

@@ -3,7 +3,7 @@
 
 int32_t x = 34;
 int32_t y;
-const char mesg[] = "Hello World!\n";
+static const char mesg[] = "Hello World!\n";
 
 int main() {
     static uint8_t z;
