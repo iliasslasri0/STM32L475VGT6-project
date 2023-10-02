@@ -1,4 +1,3 @@
-
 # Compilation
 
 
@@ -175,34 +174,34 @@ Idx Name          Size      VMA       LMA       File off  Algn
 ### 2) -Remplacez const char mesg[] par static const char mesg[]. Expliquez les différences dans les sections de données par rapport à la question précédente (elles dépendent ici aussi des optimisations).
 
 
-In this case we expect in at least one level of optimization or even w/ optimization, the static mesg[] goes to the section data, but we observe that it the size of .data dind't increase, ( because even if it is static it constant nature forces it to .rodata ) 
+In this case we expect in at least one level of optimization or even w/ optimization, the static mesg[] goes to the section data, but we observe that the size of .data dind't increase, ( because even if it is static it constant nature forces it to .rodata ) 
+the difference here is that whiout the keyword static, the compiler always stores the str "Hello World!" two times, while when we add "static", the compiler stops duplicating the str. But when we do the linking, the "Hello World!" in .rodata.str1.4 does no longer exist, so we suppose that the operation of deplucating the str to .rodata.str1.4 section is just to serve the linking by giving it more infomation, we suppose that the r.o constants in .rodata.str1.4 has some additional specifications.
 
-Resultats : 
+### 3) Remplacez const char mesg[] par const char *mesg. puis par const char * const mesg. Expliquez les différences dans le code généré et les sections de données par rapport à la question 2.
 
+const char *mesg : the only difference is in the size of .data, where, this time, the compiler stored the pointer msg.
 
+(We can see below that there is no section .rodata )
 ```
-crdn-06% arm-none-eabi-objdump -h O0-optim.o
-
-O0-optim.o:     file format elf32-littlearm
-
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000000b4  00000000  00000000  00000034  2**2
+  0 .text         00000068  00000000  00000000  00000034  2**2
                   CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
-  1 .data         00000004  00000000  00000000  000000e8  2**2
-                  CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000005  00000000  00000000  000000ec  2**2
+  1 .data         00000008  00000000  00000000  0000009c  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, DATA
+  2 .bss          00000005  00000000  00000000  000000a4  2**2
                   ALLOC
-  3 .rodata       00000040  00000000  00000000  000000ec  2**2
+  3 .rodata.str1.4 0000002e  00000000  00000000  000000a4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .comment      0000001c  00000000  00000000  0000012c  2**0
+  4 .comment      0000001c  00000000  00000000  000000d2  2**0
                   CONTENTS, READONLY
-  5 .ARM.attributes 0000002a  00000000  00000000  00000148  2**0
+  5 .ARM.attributes 0000002a  00000000  00000000  000000ee  2**0
                   CONTENTS, READONLY
-crdn-06% arm-none-eabi-objdump -h O1-optim.o
+```
+const char * const mesg : the compiler stored the pointer in .rodata, as it's not mutable.
 
-O1-optim.o:     file format elf32-littlearm
-
+(The section rodata is added)
+```
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .text         0000006c  00000000  00000000  00000034  2**2
@@ -211,67 +210,8 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   2 .bss          00000005  00000000  00000000  000000a4  2**2
                   ALLOC
-  3 .rodata.str1.4 00000030  00000000  00000000  000000a4  2**2
+  3 .rodata.str1.4 0000003e  00000000  00000000  000000a4  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .comment      0000001c  00000000  00000000  000000d4  2**0
-                  CONTENTS, READONLY
-  5 .ARM.attributes 0000002a  00000000  00000000  000000f0  2**0
-                  CONTENTS, READONLY
-crdn-06% arm-none-eabi-objdump -h O2-optim.o
-
-O2-optim.o:     file format elf32-littlearm
-
-Sections:
-Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000000  00000000  00000000  00000034  2**0
-                  CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000004  00000000  00000000  00000034  2**2
-                  CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000005  00000000  00000000  00000038  2**2
-                  ALLOC
-  3 .rodata.str1.4 00000030  00000000  00000000  00000038  2**2
-                  CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .text.startup 0000006c  00000000  00000000  00000068  2**2
-                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
-  5 .comment      0000001c  00000000  00000000  000000d4  2**0
-                  CONTENTS, READONLY
-  6 .ARM.attributes 0000002a  00000000  00000000  000000f0  2**0
-                  CONTENTS, READONLY
-crdn-06% arm-none-eabi-objdump -h Os-optim.o
-
-Os-optim.o:     file format elf32-littlearm
-
-Sections:
-Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000000  00000000  00000000  00000034  2**0
-                  CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000004  00000000  00000000  00000034  2**2
-                  CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000005  00000000  00000000  00000038  2**2
-                  ALLOC
-  3 .rodata.str1.1 0000002d  00000000  00000000  00000038  2**0
-                  CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .text.startup 00000068  00000000  00000000  00000068  2**2
-                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
-  5 .comment      0000001c  00000000  00000000  000000d0  2**0
-                  CONTENTS, READONLY
-  6 .ARM.attributes 0000002a  00000000  00000000  000000ec  2**0
-                  CONTENTS, READONLY
-
-```
-
-
-```
-crdn-06% size O0-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
-   text	   data	    bss	    dec	    hex	filename
-    244	      4	      5	    253	     fd	O0-optim.o
-crdn-06% size O1-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
-   text	   data	    bss	    dec	    hex	filename
-    156	      4	      5	    165	     a5	O1-optim.o
-crdn-06% size O2-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
-   text	   data	    bss	    dec	    hex	filename
-    156	      4	      5	    165	     a5	O2-optim.o
-crdn-06% size Os-optim.o       ~/Desktop/SE203/iliass-lasri/exercices-compilation/exo-2
-   text	   data	    bss	    dec	    hex	filename
-    149	      4	      5	    158	     9e	Os-optim.o
+  4 .rodata       00000004  00000000  00000000  000000e4  2**2
+                  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
 ```
