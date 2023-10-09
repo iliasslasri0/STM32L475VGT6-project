@@ -1,4 +1,4 @@
-ENTRY(main)
+ENTRY(_start)
 
 MEMORY
 	{
@@ -8,20 +8,17 @@ MEMORY
 	}
 
 SECTIONS
- {
+{
 	.text : {
 		*(.text)
-		_etext = . ;
 		} > sram1
 
 	.rodata : {
 		*(.rodata)
 		} > sram1
 
-	.data :  {
-		_data = . ;
+	.data : {
 		*(.data)
-		_edata = . ;
 		} > sram1
 
 	.bss : {
@@ -30,3 +27,5 @@ SECTIONS
 		_bend = . ;
 		} > sram1
 }
+
+_strt_stack = ORIGIN(sram2) + LENGTH(sram2);
