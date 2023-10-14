@@ -1,7 +1,9 @@
 extern int _bstart, _bend;
 
+int *i = &_bstart;
+
 void init_bss(){
-	for(int *i=&_bstart; i<&_bend; i++){
+	for(; i<&_bend; i++){
 		*i=0;
 	}
 }
