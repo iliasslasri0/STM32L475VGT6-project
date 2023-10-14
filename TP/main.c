@@ -1,25 +1,26 @@
 #include "led.h"
+#include "clocks.h"
 
 int _exit = 0;
 
 int main(){
-
+	clocks_init();
 	led_init();
 	for(int i=0; i< 50; i++){
 		
 		led_g_on();
-		asm volatile("nop");
+		wait(20);
 
 		led_g_off();
-		asm volatile("nop");
+		wait(20);
 
 		led(LED_YELLOW);
-		asm volatile("nop");
+		wait(20);
 		
 		led(LED_OFF);
 
 		led(LED_BLUE);
-		asm volatile("nop");
+		wait(20);
 
 		led(LED_OFF);
 	}

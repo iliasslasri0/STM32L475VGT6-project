@@ -1,10 +1,14 @@
 CC = arm-none-eabi-gcc -ffreestanding
-CFLAGS = -c -g -O1
-TARGET_ARCH = -mcpu=cortex-m4 -mthumb
+INCLUDE1 = -ICMSIS/Device/ST/STM32L4xx/Include
+INCLUDE2 = -ICMSIS/Include
+WARNINGS = -Wall -Werror -Wextra
+CFLAGS  = -c -g -O1 -ffreestanding $(WARNINGS) $(INCLUDE1) $(INCLUDE2)
+TARGET_ARCH = -mcpu=cortex-m4 -mthumb $(FPU)
 LDFLAGS = -nostdlib -T ld_ram.lds
 AS    = arm-none-eabi-as
+FPU = -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
-main : main.o crt0.o init.o led.o
+main : main.o crt0.o init.o led.o clocks.o
 
 crt0.o : crt0.s
 
