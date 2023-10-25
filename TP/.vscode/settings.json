@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "led.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "stddef.h": "c",
+        "clocks.h": "c",
+        "stm32l475xx.h": "c",
+        "uart.h": "c"
     }
 }

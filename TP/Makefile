@@ -8,7 +8,7 @@ LDFLAGS = -nostdlib -T ld_ram.lds
 AS    = arm-none-eabi-as
 FPU = -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
-main : main.o crt0.o init.o led.o clocks.o
+main : main.o crt0.o init.o led.o clocks.o uart.o
 
 crt0.o : crt0.s
 
@@ -20,6 +20,7 @@ clean:
 	rm -f crt0.o
 	rm -f init.o
 	rm -f led.o
+	rm -f uart.o
 run:
 	arm-none-eabi-gdb -x se203.gdb main
 

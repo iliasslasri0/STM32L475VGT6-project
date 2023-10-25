@@ -1,29 +1,35 @@
 #include "led.h"
 #include "clocks.h"
+#include "uart.h"
+#include <stddef.h>
 
 int _exit = 0;
 
 int main(){
 	clocks_init();
-	led_init();
-	for(int i=0; i< 50; i++){
-		
-		led_g_on();
-		wait(20);
+	uart_init();
 
-		led_g_off();
-		wait(20);
+	uint8_t s1 = 'a';
 
-		led(LED_YELLOW);
-		wait(20);
-		
-		led(LED_OFF);
+	uart_putchar(s1);
+	
+	const char s[] = "Hello World!\n";
+	uart_puts(s);
+    
+	int S = checksum();
 
-		led(LED_BLUE);
-		wait(20);
+	uint8_t data[4];
 
-		led(LED_OFF);
-	}
+	/* Pour afficher notre somme, on divise ( shift et mask pour n'avoir que les bits voulue et tt les autres à 0)
+	 le int32 sur 4 int8 pour pouvoir le transmettre */
+    data[0] = (uint8_t)((S >> 24) & 0xFF);
+    data[1] = (uint8_t)((S >> 16) & 0xFF);
+    data[2] = (uint8_t)((S >> 8) & 0xFF);
+    data[3] = (uint8_t)(S & 0xFF);
+
+    for (int i = 0; i < 4; i++) {
+        uart_putchar(data[i]);
+    }
 	while(!_exit);
 	return 0;
 }
