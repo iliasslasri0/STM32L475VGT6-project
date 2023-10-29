@@ -5,6 +5,19 @@
         "stddef.h": "c",
         "clocks.h": "c",
         "stm32l475xx.h": "c",
-        "uart.h": "c"
+        "uart.h": "c",
+        "atomic": "c",
+        "condition_variable": "c",
+        "mutex": "c",
+        "shared_mutex": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "variant": "c"
     }
 }

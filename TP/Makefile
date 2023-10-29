@@ -8,7 +8,7 @@ LDFLAGS = -nostdlib -T ld_ram.lds
 AS    = arm-none-eabi-as
 FPU = -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
-main : main.o crt0.o init.o led.o clocks.o uart.o
+main : main.o crt0.o init.o led.o clocks.o uart.o matrix.o
 
 crt0.o : crt0.s
 
