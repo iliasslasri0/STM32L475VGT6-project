@@ -87,11 +87,6 @@ static void wait(uint32_t n){
 }
 
 
-static void RST_to_1(){
-    // GPIOC->BSRR = GPIO_BSRR_BS3_Msk; // RST
-    RST(1);
-}
-
 static void init_bank0();
 
 /*** INIT MATRIX ***/
@@ -104,7 +99,7 @@ void matrix_init(){
 
     wait(8000000); // n = ( f = 80*10**6 )*(T = 100 * 10**(-3))
 
-    RST_to_1();
+    RST(1);
     init_bank0();
 }
 
@@ -174,7 +169,7 @@ void send_byte(uint8_t val, int bank){
         SDA((val>>counter)& 1);
         pulse_SCK();
     } while(counter--);
-
+    
 }
 
 
@@ -184,15 +179,17 @@ void send_byte(uint8_t val, int bank){
     à l'aide de send_byte envoie ces 8 pixels au BANK1 du DM163 dans le bon ordre (B7, G7, R7, B6, G6, R6, ..., B0, G0, R0)
     puis à l'aide de activate_row et pulse_LAT active la rangée passée en paramètre et les sorties du DM163.
 */
-void mat_set_row(int row, const rgb_color *val){
-    uint8_t i = 8;
-    while (i--){
+void mat_set_row(uint8_t row, const rgb_color *val){
+    uint8_t i = 7;
+    do{
         send_byte(val[i].b, 1);
         send_byte(val[i].g, 1);
         send_byte(val[i].r, 1);
-    }
+        
+    }while(i--);
     deactivate_rows();
-    //TODO
+    // TODO: 
+    wait(8);
     pulse_LAT();
     activate_row(row);
 }
@@ -207,18 +204,19 @@ void init_bank0(){
 
 
 void test_pixels() {
-    /*INIT MATRIX*/
-    matrix_init();
+//     /*INIT MATRIX*/
+     matrix_init();
 
-    /* DEACTIVATE ROWS*/
-    deactivate_rows();
+//     /* DEACTIVATE ROWS*/
+     deactivate_rows();
 
-    const rgb_color Rouge[8] = { {255,0,0}, {255,0,0}, {255,0,0}, {255,0,0},
-	    {255,0,0}, {255,0,0}, {255,0,0}, {255,0,0} };
-    const rgb_color Vert[8] = { {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0},
-	    {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0} };
-    const rgb_color Bleu[8] = { {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
-	    {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255} };
+    rgb_color r[8] = { {255,0,0}, {255,0,0}, {255,0,0}, {255,0,0}, 
+                    {255,0,0}, {255,0,0}, {255,0,0}, {255,0,0} };
+
+    // rgb_color g[8] = { {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0},
+	//      {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0} };
+    // rgb_color b[8] = { {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
+	//     {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255} };
 
 //     // chaque rgb_color est le dégradé de bleu, vert ou rouge
 //     // couleur de départ
@@ -238,21 +236,44 @@ void test_pixels() {
 
 // /// on boucle pour remplir un tableau contenant toutes les valeurs des teintes
 //     for(int i = 0; i<8; i++){
-//         rouge[i].r = r2;
-//         rouge[i].g = g2;
-//         rouge[i].r = b2;
+//         Rouge[i].r = r2;
+//         Rouge[i].g = g2;
+//         Rouge[i].r = b2;
 //         r2 = r2 - dr;
 //         g2 = g2 - dg;
 //         b2 = b2 - db;
 //     }
 
-    while(1)
-        for ( int j = 0; j<8; j++) {
-            switch(j%3){
-                case 0 :   mat_set_row(j, Rouge); break;
-                case 1 :   mat_set_row(j, Vert) ; break;
-                case 2 :   mat_set_row(j, Bleu) ; break;
-            }
+//     while(1)
+//         for ( int j = 0; j<8; j++) {
+//             switch(j%3){
+//                 case 0 :   mat_set_row(j, Rouge); break;
+//                 case 1 :   mat_set_row(j, Rouge) ; break;
+//                 case 2 :   mat_set_row(j, Bleu) ; break;
+//             }
+//         }
+//     // TODO: annimation? wait();
+//     wait((uint32_t)0xFFF00);
+
+
+    uint8_t row = 0;
+
+    rgb_color *color = r;
+    while(1){
+        mat_set_row(row++, color);
+        
+        // TODO animation ? wait(800000);
+
+        // if(row == 8){
+        //     if(color == b)
+        //         color = g;
+        //     else if (color == g)  
+        //         color = r;
+        //     else color = b;
+        //     row = 0;
+        // }
+        if(row==8){
+            row = 0;
         }
-    // TODO: annimation? wait();
+    }
 }
