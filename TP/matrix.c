@@ -122,7 +122,7 @@ static void pulse_SCK(){
 static void pulse_LAT(){
     LAT(1);
     LAT(0);
-    LAT(0);
+    LAT(1);
 }
 
 
@@ -164,7 +164,8 @@ static void activate_row(int row){
  le paramètre bank (0 ou 1) du DM163 (dans l'ordre attendu par celui-ci).*/
 void send_byte(uint8_t val, int bank){
     SB(bank);
-    int counter = 7; // bank 1 stocke 8 bits par LED
+    uint8_t counter = 5;
+    if(bank){counter = 7;} // bank 1 stocke 8 bits par LED
     do { // on envoie le bit de poids fort
         SDA((val>>counter)& 1);
         pulse_SCK();
@@ -185,11 +186,9 @@ void mat_set_row(uint8_t row, const rgb_color *val){
         send_byte(val[i].b, 1);
         send_byte(val[i].g, 1);
         send_byte(val[i].r, 1);
-        
     }while(i--);
     deactivate_rows();
-    // TODO: 
-    wait(8);
+    wait(750);
     pulse_LAT();
     activate_row(row);
 }
@@ -197,21 +196,21 @@ void mat_set_row(uint8_t row, const rgb_color *val){
 
 /* Init BANK0 */
 void init_bank0(){
-    for (uint8_t i = 0; i<18; i++)
-        send_byte(0xFF, 0);
+    for (uint8_t i = 0; i<24; i++)
+        send_byte((uint8_t) 0b111111, 0);
     pulse_LAT();
 }
 
 
 void test_pixels() {
-//     /*INIT MATRIX*/
+    /*INIT MATRIX*/
      matrix_init();
 
-//     /* DEACTIVATE ROWS*/
+    /* DEACTIVATE ROWS*/
      deactivate_rows();
 
-    rgb_color r[8] = { {255,0,0}, {255,0,0}, {255,0,0}, {255,0,0}, 
-                    {255,0,0}, {255,0,0}, {255,0,0}, {255,0,0} };
+    const rgb_color r[8] = { {255,255,0}, {255, 255,0}, {255, 255,0}, {0,255,0}, 
+                    {255,0,0}, {0,255,0}, {0,255,0}, {0,255,0} };
 
     // rgb_color g[8] = { {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0},
 	//      {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0} };
@@ -258,9 +257,9 @@ void test_pixels() {
 
     uint8_t row = 0;
 
-    rgb_color *color = r;
+    // const rgb_color *color = r;
     while(1){
-        mat_set_row(row++, color);
+        mat_set_row(row++, r);
         
         // TODO animation ? wait(800000);
 

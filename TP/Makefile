@@ -21,6 +21,7 @@ clean:
 	rm -f init.o
 	rm -f led.o
 	rm -f uart.o
+	rm -f matrix.o
 run:
 	arm-none-eabi-gdb -x se203.gdb main
 
