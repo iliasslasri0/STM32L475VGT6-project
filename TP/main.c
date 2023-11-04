@@ -4,11 +4,9 @@
 #include "uart.h"
 #include "matrix.h"
 
-int _exit = 0;
 
 int main(){
 	clocks_init();
-	test_pixels();
-	while(!_exit);
+	while(1){test_pixels();}
 	return 0;
 }

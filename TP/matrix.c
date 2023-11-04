@@ -1,60 +1,39 @@
-// #include "matrix.h"
-#include "stm32l475xx.h"
 #include "matrix.h"
 
-/* Macros contrôle des broches */
-#define SB(value)   do {GPIOC->BSRR = value ? GPIO_BSRR_BS5  : GPIO_BSRR_BR5 ;} while(0)
-#define LAT(value)  do {GPIOC->BSRR = value ? GPIO_BSRR_BS4  : GPIO_BSRR_BR4 ;} while(0)
-#define RST(value)  do {GPIOC->BSRR = value ? GPIO_BSRR_BS3  : GPIO_BSRR_BR3 ;} while(0)
-#define SCK(value)  do {GPIOB->BSRR = value ? GPIO_BSRR_BS1  : GPIO_BSRR_BR1 ;} while(0)
-#define SDA(value)  do {GPIOA->BSRR = value ? GPIO_BSRR_BS4  : GPIO_BSRR_BR4 ;} while(0)
-#define ROW0(value) do {GPIOB->BSRR = value ? GPIO_BSRR_BS2  : GPIO_BSRR_BR2 ;} while(0)
-#define ROW1(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS15 : GPIO_BSRR_BR15;} while(0)
-#define ROW2(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS2  : GPIO_BSRR_BR2 ;} while(0) 
-#define ROW3(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS7  : GPIO_BSRR_BR7 ;} while(0) 
-#define ROW4(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS6  : GPIO_BSRR_BR6 ;} while(0) 
-#define ROW5(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS5  : GPIO_BSRR_BR5 ;} while(0) 
-#define ROW6(value) do {GPIOB->BSRR = value ? GPIO_BSRR_BS0  : GPIO_BSRR_BR0 ;} while(0) 
-#define ROW7(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS3  : GPIO_BSRR_BR3 ;} while(0) 
 
-
-/* Configurer les ports en vitesse max  */
-static void vitesse_max(){
-    GPIOC->OSPEEDR |=  GPIO_OSPEEDR_OSPEED3_Msk | GPIO_OSPEEDR_OSPEED4_Msk | GPIO_OSPEEDR_OSPEED5_Msk;  
-    GPIOB->OSPEEDR |= GPIO_OSPEEDR_OSPEED1_Msk | GPIO_OSPEEDR_OSPEED0_Msk| GPIO_OSPEEDR_OSPEED2_Msk; 
-    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED15_Msk| GPIO_OSPEEDR_OSPEED3_Msk | GPIO_OSPEEDR_OSPEED5_Msk | GPIO_OSPEEDR_OSPEED4_Msk | GPIO_OSPEEDR_OSPEED2_Msk | GPIO_OSPEEDR_OSPEED7_Msk | GPIO_OSPEEDR_OSPEED6_Msk;
-} 
-
-
-/* configure toutes les broches reliées au driver en mode GPIO Output */
-static void ouput_mode(){
-    // PB5
-    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE5_1) | GPIO_MODER_MODE5_0; // & ~GPIO_MODER_MODE5_Msk) | (0x2 << GPIO_MODER_MODE5_Pos)
-    // PB4
-    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE4_1) | GPIO_MODER_MODE4_0;
-    // PB3
-    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE3_1) | GPIO_MODER_MODE3_0;
-    // PA4
-    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE4_1) | GPIO_MODER_MODE4_0;
-    // PB2
-    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE2_1) | GPIO_MODER_MODE2_0;
-    // PA15
-    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE15_1) | GPIO_MODER_MODE15_0;
-    // PA2
+static void output_mode(){
     GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE2_1) | GPIO_MODER_MODE2_0;
-    // PA7
-    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE7_1) | GPIO_MODER_MODE7_0;
-    // PA6
-    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE6_1) | GPIO_MODER_MODE6_0;
-    // PA5
-    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE5_1) | GPIO_MODER_MODE5_0;
-    // PB0
-    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE0_1) | GPIO_MODER_MODE0_0;
-    // PA3
     GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE3_1) | GPIO_MODER_MODE3_0;
+    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE4_1) | GPIO_MODER_MODE4_0;
+    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE5_1) | GPIO_MODER_MODE5_0;
+    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE6_1) | GPIO_MODER_MODE6_0;
+    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE7_1) | GPIO_MODER_MODE7_0;
+    GPIOA->MODER = (GPIOA->MODER & ~GPIO_MODER_MODE15_1) | GPIO_MODER_MODE15_0;
+
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED2_Msk;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED3_Msk;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED4_Msk;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED5_Msk;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED6_Msk;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED7_Msk;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDR_OSPEED15_Msk;
+
+    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE0_1) | GPIO_MODER_MODE0_0;
+    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE1_1) | GPIO_MODER_MODE1_0;
+    GPIOB->MODER = (GPIOB->MODER & ~GPIO_MODER_MODE2_1) | GPIO_MODER_MODE2_0;
+
+    GPIOB->OSPEEDR |= GPIO_OSPEEDR_OSPEED0_Msk;
+    GPIOB->OSPEEDR |= GPIO_OSPEEDR_OSPEED1_Msk;
+    GPIOB->OSPEEDR |= GPIO_OSPEEDR_OSPEED2_Msk;
+
+    GPIOC->MODER = (GPIOC->MODER & ~GPIO_MODER_MODE3_1) | GPIO_MODER_MODE3_0;
+    GPIOC->MODER = (GPIOC->MODER & ~GPIO_MODER_MODE4_1) | GPIO_MODER_MODE4_0;
+    GPIOC->MODER = (GPIOC->MODER & ~GPIO_MODER_MODE5_1) | GPIO_MODER_MODE5_0;
+
+    GPIOC->OSPEEDR |= GPIO_OSPEEDR_OSPEED3_Msk;
+    GPIOC->OSPEEDR |= GPIO_OSPEEDR_OSPEED4_Msk;
+    GPIOC->OSPEEDR |= GPIO_OSPEEDR_OSPEED5_Msk;
 }
-
-
 
 /*   Positionne ces sorties à une valeur initiale acceptable :
 
@@ -86,19 +65,13 @@ static void wait(uint32_t n){
     asm volatile("nop");
 }
 
-
 static void init_bank0();
 
-/*** INIT MATRIX ***/
-void matrix_init(){
-    // enable horloges des ports A, B et C
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOBEN_Msk | RCC_AHB2ENR_GPIOCEN_Msk | RCC_AHB2ENR_GPIOAEN_Msk;
-    ouput_mode();
-    vitesse_max();
+static void matrix_init(){
+    RCC->AHB2ENR |= (RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN);
+    output_mode();
     output_init();
-
-    wait(8000000); // n = ( f = 80*10**6 )*(T = 100 * 10**(-3))
-
+    wait(100000);
     RST(1);
     init_bank0();
 }
@@ -112,8 +85,11 @@ void matrix_init(){
  sur SCK respectant les timings attendus par le DM163.*/
 static void pulse_SCK(){
     SCK(0);
+    wait(20);
     SCK(1);
+    wait(20);
     SCK(0);
+    wait(20);
 }
 
 
@@ -121,8 +97,11 @@ static void pulse_SCK(){
  sur LAT respectant les timings attendus par le DM163.*/
 static void pulse_LAT(){
     LAT(1);
+    wait(20);
     LAT(0);
+    wait(20);
     LAT(1);
+    wait(20);
 }
 
 
@@ -170,7 +149,7 @@ void send_byte(uint8_t val, int bank){
         SDA((val>>counter)& 1);
         pulse_SCK();
     } while(counter--);
-    
+
 }
 
 
@@ -195,84 +174,61 @@ void mat_set_row(uint8_t row, const rgb_color *val){
 
 
 /* Init BANK0 */
-void init_bank0(){
-    for (uint8_t i = 0; i<24; i++)
-        send_byte((uint8_t) 0b111111, 0);
+static void init_bank0(){
+    for (uint8_t i = 0; i<18; i++)
+        send_byte((uint8_t) 0xFF, 0);
     pulse_LAT();
 }
 
 
 void test_pixels() {
     /*INIT MATRIX*/
-     matrix_init();
+    matrix_init();
 
     /* DEACTIVATE ROWS*/
-     deactivate_rows();
+    deactivate_rows();
 
-    const rgb_color r[8] = { {255,255,0}, {255, 255,0}, {255, 255,0}, {0,255,0}, 
-                    {255,0,0}, {0,255,0}, {0,255,0}, {0,255,0} };
+    const rgb_color g[8] = {
+    {0, 0, 255},
+    {0, 0, 200},
+    {0, 0, 150},
+    {0, 0, 100},
+    {0, 0, 50},
+    {0, 0, 25},
+    {0, 0, 12},
+    {0, 0, 5}
+    };
 
-    // rgb_color g[8] = { {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0},
-	//      {0,255,0}, {0,255,0}, {0,255,0}, {0,255,0} };
-    // rgb_color b[8] = { {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255},
-	//     {0,0,255}, {0,0,255}, {0,0,255}, {0,0,255} };
+    const rgb_color r[8] = {
+    {0, 255, 0},
+    {0, 200, 0},
+    {0, 150, 0},
+    {0, 100, 0},
+    {0, 50, 0},
+    {0, 25, 0},
+    {0, 12, 0},
+    {0, 5, 0}
+    };
 
-//     // chaque rgb_color est le dégradé de bleu, vert ou rouge
-//     // couleur de départ
-//     uint8_t r1 = 70;
-//     uint8_t g1 = 30;
-//     uint8_t b1 = 30;
+const rgb_color b[8] = {
+    {255, 0, 0},
+    {200, 0, 0},
+    {150, 0, 0},
+    {100, 0, 0},
+    {50, 0, 0},
+    {25, 0, 0},
+    {12, 0, 0},
+    {5, 0, 0}
+    };
 
-//    //couleur d'arrivée
-//     uint8_t r2 = 255;
-//     uint8_t g2 = 235;
-//     uint8_t b2 = 235;
-
-// ///pour chaque canal, calcul du différenciel entre chaque teinte (nbVal est le nombre de teintes du dégradé)
-//     uint8_t dr = (uint8_t)(r2 - r1) / 8;
-//     uint8_t dg = (uint8_t)(g2 - g1)/ 8;
-//     uint8_t db = (uint8_t)(b2 - b1)/ 8;
-
-// /// on boucle pour remplir un tableau contenant toutes les valeurs des teintes
-//     for(int i = 0; i<8; i++){
-//         Rouge[i].r = r2;
-//         Rouge[i].g = g2;
-//         Rouge[i].r = b2;
-//         r2 = r2 - dr;
-//         g2 = g2 - dg;
-//         b2 = b2 - db;
-//     }
-
-//     while(1)
-//         for ( int j = 0; j<8; j++) {
-//             switch(j%3){
-//                 case 0 :   mat_set_row(j, Rouge); break;
-//                 case 1 :   mat_set_row(j, Rouge) ; break;
-//                 case 2 :   mat_set_row(j, Bleu) ; break;
-//             }
-//         }
-//     // TODO: annimation? wait();
-//     wait((uint32_t)0xFFF00);
-
-
-    uint8_t row = 0;
-
-    // const rgb_color *color = r;
-    while(1){
-        mat_set_row(row++, r);
-        
-        // TODO animation ? wait(800000);
-
-        // if(row == 8){
-        //     if(color == b)
-        //         color = g;
-        //     else if (color == g)  
-        //         color = r;
-        //     else color = b;
-        //     row = 0;
-        // }
-        if(row==8){
-            row = 0;
+    while(1)
+        for ( int j = 0; j<8; j++) {
+            switch(j%3){
+                case 0 :   mat_set_row(j, r); break;
+                case 1 :   mat_set_row(j, g) ; break;
+                case 2 :   mat_set_row(j, b) ; break;
+            }
+            wait(800000);
         }
-    }
+    wait((uint32_t)0xFFF00);
 }
