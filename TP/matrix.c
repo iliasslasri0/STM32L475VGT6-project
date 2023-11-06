@@ -85,11 +85,11 @@ static void matrix_init(){
  sur SCK respectant les timings attendus par le DM163.*/
 static void pulse_SCK(){
     SCK(0);
-    wait(20);
+    wait(10);
     SCK(1);
-    wait(20);
+    wait(10);
     SCK(0);
-    wait(20);
+    wait(10);
 }
 
 
@@ -97,11 +97,11 @@ static void pulse_SCK(){
  sur LAT respectant les timings attendus par le DM163.*/
 static void pulse_LAT(){
     LAT(1);
-    wait(20);
+    wait(10);
     LAT(0);
-    wait(20);
+    wait(10);
     LAT(1);
-    wait(20);
+    wait(10);
 }
 
 
@@ -231,4 +231,18 @@ const rgb_color b[8] = {
             wait(800000);
         }
     wait((uint32_t)0xFFF00);
+}
+
+
+void display_image(const rgb_color * image){
+    /*INIT MATRIX*/
+    matrix_init();
+
+    /* DEACTIVATE ROWS*/
+    deactivate_rows();
+    while(1){
+        for (int row = 0; row < 8; row ++){
+            mat_set_row(row, &image[8*row]);
+        }
+    }
 }

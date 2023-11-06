@@ -26,5 +26,5 @@ typedef struct {
 } rgb_color;
 
 void test_pixels(void);
-
+void display_image(const rgb_color * );
 #endif

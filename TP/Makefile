@@ -1,28 +1,32 @@
-CC = arm-none-eabi-gcc -ffreestanding
-INCLUDE1 = -ICMSIS/Device/ST/STM32L4xx/Include
-INCLUDE2 = -ICMSIS/Include
-WARNINGS = -Wall -Werror -Wextra
-CFLAGS  = -c -g -O1 -ffreestanding $(WARNINGS) $(INCLUDE1) $(INCLUDE2)
-TARGET_ARCH = -mcpu=cortex-m4 -mthumb $(FPU)
+CC = arm-none-eabi-gcc
+AS = arm-none-eabi-as
+
+
+CFLAGS    = -g -O1 -ffreestanding
+CFLAGS   += -Wall -Werror -Wextra
+CPPFLAGS  = -ICMSIS/Include
+CPPFLAGS += -ICMSIS/Device/ST/STM32L4xx/Include
+
+ASFLAGS = -g
+
+TARGET_ARCH  = -mcpu=cortex-m4 -mthumb $(FPU)
+TARGET_ARCH += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+
 LDFLAGS = -nostdlib -T ld_ram.lds
-AS    = arm-none-eabi-as
-FPU = -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
-main : main.o crt0.o init.o led.o clocks.o uart.o matrix.o
+OBJS = main.o crt0.o init.o led.o uart.o matrix.o image.o
 
-crt0.o : crt0.s
+main : $(OBJS) clocks.o
+
+%.o : %.raw
+	arm-none-eabi-objcopy -B arm -I binary -O elf32-littlearm $< $@
 
 connect:
 	JLinkGDBServer -device STM32L475VG -endian little -if SWD -speed auto -ir -LocalhostOnly
 
 clean:
-	rm -f main.o
-	rm -f crt0.o
-	rm -f init.o
-	rm -f led.o
-	rm -f uart.o
-	rm -f matrix.o
+	rm -f $(OBJS)
 run:
 	arm-none-eabi-gdb -x se203.gdb main
 
-.PHONY: clean run
+.PHONY: clean run connect
