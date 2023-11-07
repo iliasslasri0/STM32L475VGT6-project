@@ -27,4 +27,5 @@ typedef struct {
 
 void test_pixels(void);
 void display_image(const rgb_color * );
+void matrix_init();
 #endif

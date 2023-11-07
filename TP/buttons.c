@@ -1,16 +1,17 @@
 #include "buttons.h"
-
+#include "led.h"
 static void hard_interrupt_sel();
 
 void button_init(void){
+    led_init();
     // enable port C clock
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN_Msk;
 
     // configure la broche PC13 en GPIO et en entrée
-    GPIOC->MODER = (GPIOC->MODER & ~GPIO_MODER_MODE13_1) | GPIO_MODER_MODE13_0;
+    GPIOC->MODER = GPIOC->MODER & ~GPIO_MODER_MODE13;
 
     // sélectionne la broche PC13 comme source d'IRQ pour EXTI13 (registre SYSCFG_EXTICRn, cf page 403)
-    SYSCFG->EXTICR[3] = (SYSCFG->EXTICR[3] & ~SYSCFG_EXTICR4_EXTI13_Msk) | (1<<1); /// TODO : pas sûr mais on veut mettre ( 0x2 = 0b0010)
+    SYSCFG->EXTICR[3] = (SYSCFG->EXTICR[3] & ~SYSCFG_EXTICR4_EXTI13_Msk) | SYSCFG_EXTICR4_EXTI13_PC; /// TODO : pas sûr mais on veut mettre ( 0x2 = 0b0010)
 
     // Hardware interrupt selection
     hard_interrupt_sel();
@@ -31,7 +32,7 @@ static void hard_interrupt_sel(){
 }
 
 
-void GPIOPC13_IRQHandler(void){
+void EXTI15_10_IRQHandler(void){
     //acquittement de l'interruption dans l'EXTI
     EXTI->PR1 |= EXTI_PR1_PIF13_Msk;
     toggle_led();

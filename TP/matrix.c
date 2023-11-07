@@ -67,7 +67,7 @@ static void wait(uint32_t n){
 
 static void init_bank0();
 
-static void matrix_init(){
+void matrix_init(){
     RCC->AHB2ENR |= (RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN);
     output_mode();
     output_init();
@@ -235,11 +235,9 @@ const rgb_color b[8] = {
 
 
 void display_image(const rgb_color * image){
-    /*INIT MATRIX*/
-    matrix_init();
-
     /* DEACTIVATE ROWS*/
     deactivate_rows();
+    
     while(1){
         for (int row = 0; row < 8; row ++){
             mat_set_row(row, &image[8*row]);

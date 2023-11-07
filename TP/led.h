@@ -9,6 +9,7 @@ void led_init();
 void led_g_on();
 void led_g_off();
 void led(const enum state);
-void wait(const uint8_t);
+void wait(const uint16_t);
+void toggle_led();
 
 #endif
