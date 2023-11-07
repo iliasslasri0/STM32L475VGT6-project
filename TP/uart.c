@@ -72,6 +72,7 @@ void uart_init(int baudrate){
     enable_T_R();
 }
 
+extern volatile uint8_t frames[192]; // 8*8*3 = 192
 
 /* Attend que l'USART1 soit prêt à transmettre quelque chose, puis lui demande de l'envoyer */
 void uart_putchar(uint8_t c){
@@ -125,4 +126,17 @@ uint32_t checksum(){
         S += uart_getchar();
 
     return S;
+}
+
+
+void USART1_IRQHandler(){
+    static uint8_t num = 0;
+    uint8_t s = uart_getchar();
+
+    if(num >= 192 || s == 0xFF){
+        num = 0;
+        return;
+    }
+
+    frames[num++] = s;
 }

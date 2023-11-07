@@ -238,9 +238,7 @@ void display_image(const rgb_color * image){
     /* DEACTIVATE ROWS*/
     deactivate_rows();
     
-    while(1){
-        for (int row = 0; row < 8; row ++){
-            mat_set_row(row, &image[8*row]);
-        }
+    for (int row = 0; row < 8; row++){
+        mat_set_row(row, &image[8*row]);
     }
 }
