@@ -38,8 +38,8 @@ static void reset_USART1(){
 }
 
 //** Configurer la vitesse du port série à 115200 bauds : registres USART1->BRR.**//
-static void Baud_rate_conf(){ 
-    USART1->BRR = 80000000 / 115200 ;// ( cf p 1388 ref man)
+static void Baud_rate_conf(int baudrate){ 
+    USART1->BRR = 80000000 / baudrate ;// ( cf p 1388 ref man)
 
 }
 
@@ -62,12 +62,12 @@ static void enable_T_R(){ // Enabling the transmitter and reciever ( p. 1379 ref
 
 
 /*** INIT ****/
-void uart_init(){
+void uart_init(int baudrate){
     PB_enclock();
     RX_TX();
     PLCK();
     reset_USART1();
-    Baud_rate_conf();
+    Baud_rate_conf(baudrate);
     oversampling_conf();
     enable_T_R();
 }

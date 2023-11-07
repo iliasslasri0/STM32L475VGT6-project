@@ -22,6 +22,7 @@ main : $(OBJS) clocks.o
 	arm-none-eabi-objcopy -B arm -I binary -O elf32-littlearm $< $@
 
 connect:
+	sh ./stty.sh
 	JLinkGDBServer -device STM32L475VG -endian little -if SWD -speed auto -ir -LocalhostOnly
 
 clean:
