@@ -16,14 +16,14 @@
 #define ROW4(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS6  : GPIO_BSRR_BR6 ;} while(0) 
 #define ROW5(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS5  : GPIO_BSRR_BR5 ;} while(0) 
 #define ROW6(value) do {GPIOB->BSRR = value ? GPIO_BSRR_BS0  : GPIO_BSRR_BR0 ;} while(0) 
-#define ROW7(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS3  : GPIO_BSRR_BR3 ;} while(0) 
+#define ROW7(value) do {GPIOA->BSRR = value ? GPIO_BSRR_BS3  : GPIO_BSRR_BR3 ;} while(0)
 
 
 typedef struct {
   uint8_t r;
   uint8_t g;
   uint8_t b;
-} rgb_color;
+  } rgb_color;
 
 void test_pixels(void);
 void display_image(const rgb_color * );

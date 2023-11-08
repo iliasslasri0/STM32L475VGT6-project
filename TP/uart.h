@@ -15,5 +15,5 @@ void uart_gets(char *, size_t );
 
 void echo();
 uint32_t checksum();
-void USART1_IRQHandler()
+void USART1_IRQHandler();
 #endif

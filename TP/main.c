@@ -17,9 +17,6 @@ int main(){
     matrix_init();
 	uart_init(38400);
 
-	USART1->CR1 |= USART_CR1_RXNEIE;
-    NVIC_EnableIRQ(37);
-
-    while(1){display_image((rgb_color *)frames);}
+    while(1)display_image((rgb_color *)frames);
 	return 0;
 }

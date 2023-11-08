@@ -70,6 +70,10 @@ void uart_init(int baudrate){
     Baud_rate_conf(baudrate);
     oversampling_conf();
     enable_T_R();
+
+	USART1->CR1 |= USART_CR1_RXNEIE;
+    NVIC_EnableIRQ(37);
+    
 }
 
 extern volatile uint8_t frames[192]; // 8*8*3 = 192

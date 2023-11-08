@@ -234,10 +234,8 @@ const rgb_color b[8] = {
 }
 
 
-void display_image(const rgb_color * image){
-    /* DEACTIVATE ROWS*/
-    deactivate_rows();
-    
+void display_image(const rgb_color *image){
+
     for (int row = 0; row < 8; row++){
         mat_set_row(row, &image[8*row]);
     }
