@@ -134,7 +134,13 @@ uint32_t checksum(){
 
 
 void USART1_IRQHandler(){
-    static uint8_t num = 0;
+    static uint8_t num;
+
+    /* USART_ISR_FE et USART_ISR_OR */
+    if (USART1->ISR & USART_ISR_ORE || USART1->ISR & USART_ISR_FE){
+        return; // Ici on ignore un seul caractère ?? ou comment ***WIP***, TODO : comment ignorer toute la trame !
+    }
+
     uint8_t s = uart_getchar();
 
     if(num >= 192 || s == 0xFF){
