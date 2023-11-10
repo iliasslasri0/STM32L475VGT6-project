@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "stm32l475xx.h"
 
 void uart_init();
 

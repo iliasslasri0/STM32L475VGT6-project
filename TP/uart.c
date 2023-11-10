@@ -1,6 +1,4 @@
-#include <stddef.h>
 #include "uart.h"
-#include "stm32l475xx.h"
 
 
 /* Passer les broches RX et TX du port B (à vous de trouver lesquelles) en mode USART . Pour cela, 
