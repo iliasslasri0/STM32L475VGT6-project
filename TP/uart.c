@@ -76,7 +76,6 @@ void uart_init(int baudrate){
     
 }
 
-extern volatile uint8_t frames[192]; // 8*8*3 = 192
 
 /* Attend que l'USART1 soit prêt à transmettre quelque chose, puis lui demande de l'envoyer */
 void uart_putchar(uint8_t c){
@@ -138,15 +137,21 @@ void USART1_IRQHandler(){
 
     /* USART_ISR_FE et USART_ISR_OR */
     if (USART1->ISR & USART_ISR_ORE || USART1->ISR & USART_ISR_FE){
-        return; // Ici on ignore un seul caractère ?? ou comment ***WIP***, TODO : comment ignorer toute la trame !
+        err = 1;
+        USART1->ICR |= USART_ICR_FECF;
+        USART1->ICR |= USART_ICR_ORECF;
     }
 
     uint8_t s = uart_getchar();
 
     if(num >= 192 || s == 0xFF){
         num = 0;
+        err = 0;
         return;
     }
 
-    frames[num++] = s;
+    if(!err){ // Pour la simple raison de ne pas écrire en RAM pour rien.
+        frames[num++] = s;
+    }
+    // On arrête l'écriture en RAM, mais on continue de recevoir, jusqu'à la prochaine trame qui commence forcément par 0xFF.
 }

@@ -8,6 +8,7 @@
 
 /* Objet global qui contiendra la trame affichée. Il sera modifé par le handler d'IRQ du port série, et lu par la tâche d'affichage. */
 volatile rgb_color frames[64];
+uint8_t err = 0;
 
 int main(){
 	clocks_init();
@@ -17,6 +18,8 @@ int main(){
     matrix_init();
 	uart_init(38400);
 
-    while(1)display_image((rgb_color *)frames);
+    while(1){
+		if( !err ){display_image((rgb_color *)frames);}
+	}
 	return 0;
 }
