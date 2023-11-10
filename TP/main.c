@@ -5,9 +5,10 @@
 #include "matrix.h"
 #include "irq.h"
 #include "buttons.h"
+#include "timer.h"
 
 /* Objet global qui contiendra la trame affichée. Il sera modifé par le handler d'IRQ du port série, et lu par la tâche d'affichage. */
-volatile rgb_color frames[64];
+volatile uint8_t frames[192];
 uint8_t err = 0;
 
 int main(){
@@ -18,8 +19,11 @@ int main(){
     matrix_init();
 	uart_init(38400);
 
+	// Initialiser le timer avec une valeur maximale de 1000000 (1 seconde)
+    timer_init(10000000);
+	while(1);
     while(1){
-		if( !err ){display_image((rgb_color *)frames);}
+	 	if( !err ){display_image((rgb_color *)frames);}
 	}
 	return 0;
 }

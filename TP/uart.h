@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "stm32l475xx.h"
+#include "matrix.h"
 
 void uart_init();
 

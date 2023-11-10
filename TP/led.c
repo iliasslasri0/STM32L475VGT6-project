@@ -54,6 +54,11 @@ void wait(const uint16_t n){
 
 
 void toggle_led(){
-	if(state_led)led_g_off();
-    else led_g_on ();
+	// if(state_led)led_g_off();
+    // else led_g_on ();
+
+
+	led_g_on();
+	wait(1000);
+	led_g_off();
 }
