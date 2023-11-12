@@ -20,10 +20,7 @@ int main(){
 	uart_init(38400);
 
 	// Initialiser le timer avec une valeur maximale de 1000000 (1 seconde)
-    timer_init(10000000);
+    timer_init(1000000);
 	while(1);
-    while(1){
-	 	if( !err ){display_image((rgb_color *)frames);}
-	}
 	return 0;
 }
