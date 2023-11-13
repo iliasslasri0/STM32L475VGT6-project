@@ -1,4 +1,4 @@
-ENTRY(_start)
+ENTRY(flash_to_sram)
 
 MEMORY
 	{
@@ -9,20 +9,26 @@ MEMORY
 
 SECTIONS
 {
-	.IRQ : {
-        *(.IRQ)
-    	} AT> flash
-
+	_load_text = LOADADDR(.text);
 	.text : {
+		_start_text = .;
+		*(.IRQ)
 		*(.text)
-		} AT> flash
+		. = ALIGN(4);
+		_end_text = .;
+		} > sram1 AT> flash
 
 	.rodata : {
 		*(.rodata)
-		} > sram1 AT> flash
+		. = ALIGN(4);
+		} AT> flash
 
+	_load_data = LOADADDR(.data);
 	.data : {
+		_start_data = .;
 		*(.data)
+		. = ALIGN(4);
+		_end_data = .;
 		} > sram1 AT> flash
 
 	.bss : {
@@ -30,6 +36,11 @@ SECTIONS
 		*(.bss) *(COMMON)
 		_bend = . ;
 		} > sram1
+
+	.LOAD : {
+		*(.LOAD)
+		. = ALIGN(4);
+		} AT> flash
 }
 
 _strt_stack = ORIGIN(sram2) + LENGTH(sram2);

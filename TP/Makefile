@@ -14,7 +14,7 @@ TARGET_ARCH += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
 LDFLAGS = -nostdlib -T ld_ram.lds
 
-OBJS = main.o crt0.o init.o led.o uart.o matrix.o image.o irq.o buttons.o timer.o clocks.o
+OBJS = main.o init.o led.o uart.o matrix.o image.o irq.o buttons.o timer.o clocks.o memfuncs.o
 
 main : $(OBJS)
 

@@ -108,12 +108,12 @@ MAKE_DEFAULT_HANDLER(DMA2D_IRQHandler)
 
 
 
-extern uint8_t _strt_stack, _start;
+extern uint8_t _strt_stack, flash_to_sram;
 
 void __attribute__((section(".IRQ"))) *vector_table[] = {
   // Stack and Reset Handler
   &_strt_stack,            /* Top of stack */
-  &_start,             /* Reset handler */
+  &flash_to_sram,             /* Reset handler */
 
   // ARM internal exceptions
   NMI_Handler,        /* NMI handler */

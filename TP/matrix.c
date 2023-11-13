@@ -222,7 +222,7 @@ const rgb_color b[8] = {
                 case 1 :   mat_set_row(j, g) ; break;
                 case 2 :   mat_set_row(j, b) ; break;
             }
-            wait(800000);
+            wait(2500000);
         }
     wait((uint32_t)0xFFF00);
 }
