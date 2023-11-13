@@ -229,8 +229,18 @@ const rgb_color b[8] = {
 
 
 void display_image(const rgb_color *image){
+    /* Séparation pour affichage de ligne par ligne à chaque interruption au lieu de toute la matrice */
+    /* Parceque l'affichage correct n'est pas possible sur toute la matrice ( sans optimisation, ..)*/
+    static rgb_color row[8];
+    static int row_num;
 
-    for (int row = 0; row < 8; row++){
-        mat_set_row(row, &image[8*row]);
+    for (int num = 0; num < 8 ; num++){
+        row[num] = image[row_num*8 + num];
+    }
+
+    mat_set_row(row_num++, row);
+
+    if( row_num == 7){
+        row_num = 0;
     }
 }
