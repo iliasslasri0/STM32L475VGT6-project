@@ -85,11 +85,8 @@ void matrix_init(){
  sur SCK respectant les timings attendus par le DM163.*/
 static void pulse_SCK(){
     SCK(0);
-    wait(10);
     SCK(1);
-    wait(10);
     SCK(0);
-    wait(10);
 }
 
 
@@ -97,11 +94,8 @@ static void pulse_SCK(){
  sur LAT respectant les timings attendus par le DM163.*/
 static void pulse_LAT(){
     LAT(1);
-    wait(10);
     LAT(0);
-    wait(10);
     LAT(1);
-    wait(10);
 }
 
 

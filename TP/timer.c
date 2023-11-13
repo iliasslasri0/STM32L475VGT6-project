@@ -37,14 +37,8 @@ void timer_init(int max_us){
 
 void TIM2_IRQHandler(){
     /* Vérifier si c'est l'interruption de mise à jour (UIF) */
-    if (TIM2->SR & TIM_SR_UIF) {
-        /* Effacer le flag UIF */
+    if(TIM2->SR & TIM_SR_UIF_Msk){
+        display_image((rgb_color *)frames);
         TIM2->SR &= ~TIM_SR_UIF;
-        toggle_led();
     }
-
-    // if(TIM2->SR & TIM_SR_UIF_Msk){
-    //     display_image((rgb_color *)frames);
-    //     TIM2->SR &= ~TIM_SR_UIF;
-    // }
 }

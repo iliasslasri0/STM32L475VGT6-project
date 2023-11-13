@@ -19,8 +19,8 @@ int main(){
     matrix_init();
 	uart_init(38400);
 
-	// Initialiser le timer avec une valeur maximale de 1000000 (1 seconde)
-    timer_init(1000000);
+	// Initialiser le timer
+    timer_init((int)300000/8);
 	while(1);
 	return 0;
 }
