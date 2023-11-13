@@ -11,19 +11,19 @@ SECTIONS
 {
 	.IRQ : {
         *(.IRQ)
-    	} > sram1
+    	} AT> flash
 
 	.text : {
 		*(.text)
-		} > sram1
+		} AT> flash
 
 	.rodata : {
 		*(.rodata)
-		} > sram1
+		} > sram1 AT> flash
 
 	.data : {
 		*(.data)
-		} > sram1
+		} > sram1 AT> flash
 
 	.bss : {
 		_bstart = . ;

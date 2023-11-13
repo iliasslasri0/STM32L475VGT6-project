@@ -14,9 +14,9 @@ TARGET_ARCH += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
 LDFLAGS = -nostdlib -T ld_ram.lds
 
-OBJS = main.o crt0.o init.o led.o uart.o matrix.o image.o irq.o buttons.o timer.o
+OBJS = main.o crt0.o init.o led.o uart.o matrix.o image.o irq.o buttons.o timer.o clocks.o
 
-main : $(OBJS) clocks.o
+main : $(OBJS)
 
 %.o : %.raw
 	arm-none-eabi-objcopy -B arm -I binary -O elf32-littlearm $< $@

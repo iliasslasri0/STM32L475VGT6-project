@@ -20,7 +20,8 @@ int main(){
 	uart_init(38400);
 
 	// Initialiser le timer
-    timer_init((int)(10000/8));
+    /// timer_init((int)(10000/8));
+	test_pixels();
 	while(1);
 	return 0;
 }
